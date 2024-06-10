@@ -1,5 +1,5 @@
 // Fungsi untuk mengonversi waktu server (UTC) ke waktu klien
-const convertServerToClient = (datetimeUTC) => {
+const waktuConvertServerToClient = (datetimeUTC) => {
     const clientTimezoneOffsetMinutes = new Date().getTimezoneOffset();
     const clientTimezoneOffsetHours = clientTimezoneOffsetMinutes / 60;
     const datetime = new Date(datetimeUTC);
@@ -7,14 +7,26 @@ const convertServerToClient = (datetimeUTC) => {
     return datetime.toISOString();
 };
 
+const waktuConvertClientToServer = (datetimeClient) => {
+    const datetime = new Date(datetimeClient);
+    datetime.setHours(datetime.getHours());
+    return datetime.toISOString();
+};
+
 // Fungsi untuk menambah menit pada waktu server
-const datetimeServerTambahMenit = (datetimeUTC, menit) => {
+const waktuServerTambahMenit = (datetimeUTC, menit) => {
     const datetime = new Date(datetimeUTC);
     datetime.setMinutes(datetime.getMinutes() + menit);
     return datetime.toISOString();
 };
 
-function formatCountdown(milliseconds) {
+const waktuServerTambahHari = (datetimeUTC, hari) => {
+    const datetime = new Date(datetimeUTC);
+    datetime.setDate(datetime.getDate() + hari);
+    return datetime.toISOString();
+};
+
+function waktuFormatCountdown(milliseconds) {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -33,7 +45,9 @@ function formatCountdown(milliseconds) {
 }
 
 module.exports = {
-    convertServerToClient,
-    datetimeServerTambahMenit,
-    formatCountdown
+    waktuConvertServerToClient,
+    waktuConvertClientToServer,
+    waktuServerTambahMenit,
+    waktuServerTambahHari,
+    waktuFormatCountdown
 };

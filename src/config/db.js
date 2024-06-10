@@ -10,5 +10,5 @@ module.exports = {
 // npx prisma db pull --schema=prisma/schema1.prisma
 // npx prisma db push --schema=prisma/schema1.prisma
 
-
+// git branch -m master main
 // git pull origin main --allow-unrelated-histories

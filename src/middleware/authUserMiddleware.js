@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const db = require('../config/db');
-const { convertServerToClient } = require('../config/datetime');
+const { waktuConvertServerToClient } = require('../config/datetime');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -19,6 +19,10 @@ async function authUserMiddleware(req, res, next) {
             return res.status(401).json({ msg: 'Format token akses tidak benar' });
         }
 
+        const decoded = jwt.verify(accessToken, JWT_SECRET);
+        if (!decoded || !decoded.id) {
+            return res.status(401).json({ msg: 'Token akses tidak valid' });
+        }
 
         const tokenCookies = req.cookies[process.env.COOKIES_TOKEN];
 
@@ -26,12 +30,8 @@ async function authUserMiddleware(req, res, next) {
             return res.status(401).json({ msg: 'Token cookies tidak valid' });
         }
 
-        const decoded = jwt.verify(accessToken, JWT_SECRET);
-        if (!decoded || !decoded.id) {
-            return res.status(401).json({ msg: 'Token akses tidak valid' });
-        }
 
-        const user = await db.siuang.user.findUnique({
+        let user = await db.siuang.users.findUnique({
             where: {
                 id: decoded.id,
             },
@@ -51,26 +51,59 @@ async function authUserMiddleware(req, res, next) {
         }
 
         const datetimeServer = new Date();
-        // return res.json(convertServerToClient(user.premium_expired_at))
+        // return res.json(waktuConvertServerToClient(user.premium_expired_at))
 
         if (user.premium_expired_at != null && user.premium_expired_at < datetimeServer) {
             if (user.isPremium == true) {
-                var updateData = await db.siuang.user.update({
+                var updateDataPremium = await db.siuang.users.update({
                     where: {
                         id: user.id,
                     },
                     data: {
                         isPremium: false
-                    }
+                    },
                 })
             }
         }
 
-        if (updateData) {
-            user = updateData
+        if (updateDataPremium) {
+            user = updateDataPremium
         }
 
+        var updateDataLastSeen = await db.siuang.users.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                lastSeenAt: new Date()
+            },
+        })
+        if (updateDataPremium) {
+            user = updateDataLastSeen
+        }
+
+
+        user = {
+            id: user.id,
+            nama: user.nama,
+            email: user.email,
+            phone: user.phone,
+            isaktif: user.isaktif,
+            google_id: user.google_id,
+            group_id : user.group_id,
+            token: user.token,
+            tokenRefresh: user.tokenRefresh,
+            created_at: user.created_at,
+            lastSeenAtServer: user.lastSeenAt,
+            lastSeenAtClient: waktuConvertServerToClient(user.lastSeenAt)
+        }
+
+        // if (!user.group_id) {
+        //     return res.status(400).json({msg: 'pilih group dahulu', data : 'redirect ke halaman pilih group'})
+        // }
+
         req.user = user;
+
 
         // Lanjutkan ke handler permintaan selanjutnya
         next();

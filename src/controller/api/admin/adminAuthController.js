@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const { z } = require('zod');
 const { selectAdmin } = require('../../../models/field');
 const mail = require('../../../config/mail');
-const { convertServerToClient, datetimeServerTambahMenit, formatCountdown } = require('../../../config/datetime');
+const { waktuConvertServerToClient, waktuServerTambahMenit, waktuFormatCountdown } = require('../../../config/datetime');
 const { token } = require('morgan');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -25,7 +25,7 @@ const userValidator = z.object({
 
 exports.login = async (req, res) => {
     const datetimeServer = new Date();
-    const datetimeClient = convertServerToClient(datetimeServer);
+    const datetimeClient = waktuConvertServerToClient(datetimeServer);
     try {
         const { email, password } = req.body;
 
@@ -55,11 +55,11 @@ exports.login = async (req, res) => {
         // return res.json(datetimeServer)
         if (user.pass_fail_at > datetimeServer) {
             return res.status(400).json({
-                msg: 'gagal ' + user.pass_fail + ' login, coba kembali setelah ' + convertServerToClient(user.pass_fail_at),
+                msg: 'gagal ' + user.pass_fail + ' login, coba kembali setelah ' + waktuConvertServerToClient(user.pass_fail_at),
                 data: {
                     pass_fail: user.pass_fail,
-                    pass_fail_at: convertServerToClient(user.pass_fail_at),
-                    countdown: formatCountdown(user.pass_fail_at - datetimeServer)
+                    pass_fail_at: waktuConvertServerToClient(user.pass_fail_at),
+                    countdown: waktuFormatCountdown(user.pass_fail_at - datetimeServer)
                 }
             })
         }
@@ -84,16 +84,16 @@ exports.login = async (req, res) => {
                     },
                     data: {
                         pass_fail: failUpdate.pass_fail,
-                        pass_fail_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.PASS_FAIL_1_AT))
+                        pass_fail_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.PASS_FAIL_1_AT))
 
                     }
                 })
                 return res.status(400).json({
-                    msg: 'password salah, telah gagal ' + failUpdate.pass_fail + ' kali percobaan, ulangi kembali dalam ' + convertServerToClient(dataUpdate.pass_fail_at),
+                    msg: 'password salah, telah gagal ' + failUpdate.pass_fail + ' kali percobaan, ulangi kembali dalam ' + waktuConvertServerToClient(dataUpdate.pass_fail_at),
                     data: {
                         pass_fail: dataUpdate.pass_fail,
-                        pass_fail_at: convertServerToClient(dataUpdate.pass_fail_at),
-                        countdown: formatCountdown(new Date(dataUpdate.pass_fail_at) - datetimeServer)
+                        pass_fail_at: waktuConvertServerToClient(dataUpdate.pass_fail_at),
+                        countdown: waktuFormatCountdown(new Date(dataUpdate.pass_fail_at) - datetimeServer)
                     }
                 })
             } else if (failUpdate.pass_fail >= 6 && failUpdate.pass_fail <= 9) {
@@ -103,16 +103,16 @@ exports.login = async (req, res) => {
                     },
                     data: {
                         pass_fail: failUpdate.pass_fail,
-                        pass_fail_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.PASS_FAIL_1_AT))
+                        pass_fail_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.PASS_FAIL_1_AT))
 
                     }
                 })
                 return res.status(400).json({
-                    msg: 'password salah, telah gagal ' + failUpdate.pass_fail + ' kali percobaan, ulangi kembali dalam ' + convertServerToClient(dataUpdate.pass_fail_at),
+                    msg: 'password salah, telah gagal ' + failUpdate.pass_fail + ' kali percobaan, ulangi kembali dalam ' + waktuConvertServerToClient(dataUpdate.pass_fail_at),
                     data: {
                         pass_fail: dataUpdate.pass_fail,
-                        pass_fail_at: convertServerToClient(dataUpdate.pass_fail_at),
-                        countdown: formatCountdown(new Date(dataUpdate.pass_fail_at) - datetimeServer)
+                        pass_fail_at: waktuConvertServerToClient(dataUpdate.pass_fail_at),
+                        countdown: waktuFormatCountdown(new Date(dataUpdate.pass_fail_at) - datetimeServer)
                     }
                 })
             } else if (failUpdate.pass_fail == 10) {
@@ -122,7 +122,7 @@ exports.login = async (req, res) => {
                     },
                     data: {
                         pass_fail: failUpdate.pass_fail,
-                        pass_fail_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.PASS_FAIL_2_AT)),
+                        pass_fail_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.PASS_FAIL_2_AT)),
                         isaktif: false,
                     }
                 })
@@ -131,8 +131,8 @@ exports.login = async (req, res) => {
                     data: {
                         isaktif: dataUpdate.isaktif,
                         pass_fail: dataUpdate.pass_fail,
-                        pass_fail_at: convertServerToClient(dataUpdate.pass_fail_at),
-                        countdown: formatCountdown(new Date(dataUpdate.pass_fail_at) - datetimeServer)
+                        pass_fail_at: waktuConvertServerToClient(dataUpdate.pass_fail_at),
+                        countdown: waktuFormatCountdown(new Date(dataUpdate.pass_fail_at) - datetimeServer)
                     }
                 })
             } else if (failUpdate.pass_fail >= 11) {
@@ -142,15 +142,15 @@ exports.login = async (req, res) => {
                     },
                     data: {
                         pass_fail: failUpdate.pass_fail,
-                        pass_fail_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.PASS_FAIL_2_AT))
+                        pass_fail_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.PASS_FAIL_2_AT))
                     }
                 })
                 return res.status(400).json({
-                    msg: 'password salah, telah gagal ' + failUpdate.pass_fail + ' kali percobaan, ulangi kembali dalam ' + convertServerToClient(dataUpdate.pass_fail_at),
+                    msg: 'password salah, telah gagal ' + failUpdate.pass_fail + ' kali percobaan, ulangi kembali dalam ' + waktuConvertServerToClient(dataUpdate.pass_fail_at),
                     data: {
                         pass_fail: dataUpdate.pass_fail,
-                        pass_fail_at: convertServerToClient(dataUpdate.pass_fail_at),
-                        countdown: formatCountdown(new Date(dataUpdate.pass_fail_at) - datetimeServer)
+                        pass_fail_at: waktuConvertServerToClient(dataUpdate.pass_fail_at),
+                        countdown: waktuFormatCountdown(new Date(dataUpdate.pass_fail_at) - datetimeServer)
                     }
                 })
             }
@@ -177,7 +177,7 @@ exports.login = async (req, res) => {
 
 exports.sendOtp = async (req, res) => {
     const datetimeServer = new Date();
-    const datetimeClient = convertServerToClient(datetimeServer);
+    const datetimeClient = waktuConvertServerToClient(datetimeServer);
     try {
         const { email } = req.body
 
@@ -209,9 +209,9 @@ exports.sendOtp = async (req, res) => {
 
         if (user.otp_resend_at >= datetimeServer) {
             return res.status(400).json({
-                msg: 'ulangi otp pada ' + convertServerToClient(user.otp_resend_at),
+                msg: 'ulangi otp pada ' + waktuConvertServerToClient(user.otp_resend_at),
                 data: {
-                    otp_resend_at: convertServerToClient(user.otp_resend_at),
+                    otp_resend_at: waktuConvertServerToClient(user.otp_resend_at),
                 }
             })
         }
@@ -236,8 +236,8 @@ exports.sendOtp = async (req, res) => {
             },
             data: {
                 otp: await bcrypt.hash(otp, 10),
-                otp_resend_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.OTP_RESEND_AT)),
-                otp_expired_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.OTP_EXPIRED_AT)),
+                otp_resend_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.OTP_RESEND_AT)),
+                otp_expired_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.OTP_EXPIRED_AT)),
 
             }
         })
@@ -251,8 +251,8 @@ exports.sendOtp = async (req, res) => {
                 phone: userUpdate.phone,
                 password: userUpdate.password,
                 isaktif: userUpdate.isaktif,
-                otp_resend_at: convertServerToClient(userUpdate.otp_resend_at),
-                otp_expired_at: convertServerToClient(userUpdate.otp_expired_at),
+                otp_resend_at: waktuConvertServerToClient(userUpdate.otp_resend_at),
+                otp_expired_at: waktuConvertServerToClient(userUpdate.otp_expired_at),
             }
         });
 
@@ -279,7 +279,7 @@ exports.loginWithOtp = async (req, res) => {
     try {
 
         const datetimeServer = new Date();
-        const datetimeClient = convertServerToClient(datetimeServer);
+        const datetimeClient = waktuConvertServerToClient(datetimeServer);
 
         const { email, password, otp } = req.body;
 
@@ -314,20 +314,20 @@ exports.loginWithOtp = async (req, res) => {
 
         if (user.otp_expired_at < datetimeServer) {
             return res.status(400).json({
-                msg: 'OTP telah expired ' + convertServerToClient(user.otp_expired_at),
+                msg: 'OTP telah expired ' + waktuConvertServerToClient(user.otp_expired_at),
                 data: {
-                    otp_expired_at: convertServerToClient(user.otp_expired_at),
+                    otp_expired_at: waktuConvertServerToClient(user.otp_expired_at),
                 }
             })
         }
 
         if (user.otp_fail_at > datetimeServer) {
             return res.status(400).json({
-                msg: 'OTP gagal ' + user.otp_fail + ' kali, coba kembali setelah ' + convertServerToClient(user.otp_fail_at),
+                msg: 'OTP gagal ' + user.otp_fail + ' kali, coba kembali setelah ' + waktuConvertServerToClient(user.otp_fail_at),
                 data: {
                     otp_fail: user.otp_fail,
-                    otp_fail_at: convertServerToClient(user.otp_fail_at),
-                    countdown: formatCountdown(user.otp_fail_at - datetimeServer)
+                    otp_fail_at: waktuConvertServerToClient(user.otp_fail_at),
+                    countdown: waktuFormatCountdown(user.otp_fail_at - datetimeServer)
                 }
             })
         }
@@ -354,15 +354,15 @@ exports.loginWithOtp = async (req, res) => {
                     },
                     data: {
                         otp_fail: failUpdate.otp_fail,
-                        otp_fail_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.OTP_FAIL_1_AT))
+                        otp_fail_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.OTP_FAIL_1_AT))
                     }
                 })
                 return res.status(400).json({
-                    msg: 'OTP salah, telah gagal ' + dataUpdate.otp_fail + ' kali percobaan, ulangi kembali dalam ' + convertServerToClient(dataUpdate.otp_fail_at),
+                    msg: 'OTP salah, telah gagal ' + dataUpdate.otp_fail + ' kali percobaan, ulangi kembali dalam ' + waktuConvertServerToClient(dataUpdate.otp_fail_at),
                     data: {
                         otp_fail: dataUpdate.otp_fail,
-                        otp_fail_at: convertServerToClient(dataUpdate.otp_fail_at),
-                        countdown: formatCountdown(new Date(dataUpdate.otp_fail_at) - datetimeServer)
+                        otp_fail_at: waktuConvertServerToClient(dataUpdate.otp_fail_at),
+                        countdown: waktuFormatCountdown(new Date(dataUpdate.otp_fail_at) - datetimeServer)
                     }
                 })
             } else if (failUpdate.otp_fail >= 6 && failUpdate.otp_fail <= 9) {
@@ -373,16 +373,16 @@ exports.loginWithOtp = async (req, res) => {
                     },
                     data: {
                         otp_fail: failUpdate.otp_fail,
-                        otp_fail_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.OTP_FAIL_1_AT))
+                        otp_fail_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.OTP_FAIL_1_AT))
 
                     }
                 })
                 return res.status(400).json({
-                    msg: 'OTP salah, telah gagal ' + failUpdate.otp_fail + ' kali percobaan, ulangi kembali dalam ' + convertServerToClient(dataUpdate.otp_fail_at),
+                    msg: 'OTP salah, telah gagal ' + failUpdate.otp_fail + ' kali percobaan, ulangi kembali dalam ' + waktuConvertServerToClient(dataUpdate.otp_fail_at),
                     data: {
                         otp_fail: dataUpdate.otp_fail,
-                        otp_fail_at: convertServerToClient(dataUpdate.otp_fail_at),
-                        countdown: formatCountdown(new Date(dataUpdate.otp_fail_at) - datetimeServer)
+                        otp_fail_at: waktuConvertServerToClient(dataUpdate.otp_fail_at),
+                        countdown: waktuFormatCountdown(new Date(dataUpdate.otp_fail_at) - datetimeServer)
                     }
                 })
             } else if (failUpdate.otp_fail == 10) {
@@ -392,7 +392,7 @@ exports.loginWithOtp = async (req, res) => {
                     },
                     data: {
                         otp_fail: failUpdate.otp_fail,
-                        otp_fail_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.OTP_FAIL_2_AT)),
+                        otp_fail_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.OTP_FAIL_2_AT)),
                         isaktif: false,
                     }
                 })
@@ -401,8 +401,8 @@ exports.loginWithOtp = async (req, res) => {
                     data: {
                         isaktif: dataUpdate.isaktif,
                         otp_fail: dataUpdate.otp_fail,
-                        otp_fail_at: convertServerToClient(dataUpdate.otp_fail_at),
-                        countdown: formatCountdown(new Date(dataUpdate.otp_fail_at) - datetimeServer)
+                        otp_fail_at: waktuConvertServerToClient(dataUpdate.otp_fail_at),
+                        countdown: waktuFormatCountdown(new Date(dataUpdate.otp_fail_at) - datetimeServer)
                     }
                 })
             } else if (failUpdate.otp_fail >= 11) {
@@ -412,15 +412,15 @@ exports.loginWithOtp = async (req, res) => {
                     },
                     data: {
                         otp_fail: failUpdate.otp_fail,
-                        otp_fail_at: datetimeServerTambahMenit(datetimeServer, parseInt(process.env.OTP_FAIL_2_AT))
+                        otp_fail_at: waktuServerTambahMenit(datetimeServer, parseInt(process.env.OTP_FAIL_2_AT))
                     }
                 })
                 return res.status(400).json({
-                    msg: 'OTP salah, telah gagal ' + failUpdate.otp_fail + ' kali percobaan, ulangi kembali dalam ' + convertServerToClient(dataUpdate.otp_fail_at),
+                    msg: 'OTP salah, telah gagal ' + failUpdate.otp_fail + ' kali percobaan, ulangi kembali dalam ' + waktuConvertServerToClient(dataUpdate.otp_fail_at),
                     data: {
                         otp_fail: dataUpdate.otp_fail,
-                        otp_fail_at: convertServerToClient(dataUpdate.otp_fail_at),
-                        countdown: formatCountdown(new Date(dataUpdate.otp_fail_at) - datetimeServer)
+                        otp_fail_at: waktuConvertServerToClient(dataUpdate.otp_fail_at),
+                        countdown: waktuFormatCountdown(new Date(dataUpdate.otp_fail_at) - datetimeServer)
                     }
                 })
             }

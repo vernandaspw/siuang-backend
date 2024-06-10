@@ -8,90 +8,310 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id                 String    @id @default(uuid()) @db.Char(36)
-  nama               String    @db.VarChar(30)
-  email              String?   @unique(map: "users_email_unique") @db.VarChar(255)
-  phone              String?   @unique(map: "users_phone_unique") @db.VarChar(16)
-  password           String    @db.VarChar(65)
-  isaktif            Boolean   @default(true)
-  google_id          String?   @db.VarChar(25)
-  lastSeenAt         DateTime? @db.Timestamp(0)
-  token              String?   @db.Text
-  tokenRefresh       String?   @db.Text
-  isPremium          Boolean   @default(false)
-  premium_expired_at DateTime? @db.Timestamp(0)
-  created_at         DateTime? @db.Timestamp(0)
-  updated_at         DateTime? @db.Timestamp(0)
+model admins {
+  id             String          @id @unique(map: "id") @db.Char(36)
+  google_id      String?         @db.VarChar(30)
+  nama           String          @db.VarChar(25)
+  email          String          @unique(map: "email") @db.VarChar(40)
+  phone          String?         @db.VarChar(40)
+  password       String          @db.VarChar(80)
+  pass_fail      Int             @default(0)
+  pass_fail_at   DateTime?       @db.Timestamp(0)
+  role           String          @db.VarChar(20)
+  isaktif        Boolean
+  otp            String?         @db.VarChar(80)
+  otp_resend_at  DateTime?       @db.Timestamp(0)
+  otp_expired_at DateTime?       @db.Timestamp(0)
+  otp_fail       Int             @default(0)
+  otp_fail_at    DateTime?       @db.Timestamp(0)
+  token          String?         @db.Text
+  tokenRefresh   String?         @db.Text
+  created_at     DateTime?       @db.Timestamp(0)
+  kredit_topups  kredit_topups[]
+}
+
+model aset_akuns {
+  id         String       @id @unique(map: "id") @db.Char(36)
+  urut       Int?
+  group_id   String       @db.Char(36)
+  user_id    String       @db.Char(36)
+  aset_id    String       @db.Char(36)
+  nama       String       @db.VarChar(40)
+  icon_id    String?      @db.Char(36)
+  color_bg   String?      @db.VarChar(10)
+  color_text String?      @db.VarChar(10)
+  created_at DateTime?    @db.Timestamp(0)
+  updated_at DateTime?    @db.Timestamp(0)
+  deleted_at DateTime?    @db.Timestamp(0)
+  icons      icons?       @relation(fields: [icon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "aset_akuns_ibfk_2")
+  users      users        @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "aset_akuns_ibfk_3")
+  groups     groups       @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "aset_akuns_ibfk_4")
+  asets      asets        @relation(fields: [aset_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "aset_akuns_ibfk_1")
+  transaksis transaksis[]
+
+  @@index([aset_id], map: "aset_id")
+  @@index([group_id], map: "group_id")
+  @@index([icon_id], map: "icon_id")
+  @@index([user_id], map: "user_id")
+}
+
+model aset_kategoris {
+  id         String    @id @unique(map: "id") @db.Char(36)
+  urut       Int?
+  nama       String    @db.VarChar(30)
+  group_id   String?   @db.Char(36)
+  keterangan String?   @db.Text
+  icon_id    String?   @unique(map: "aset_kategori_icon_id_key") @db.Char(36)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+  icons      icons?    @relation(fields: [icon_id], references: [id], map: "aset_kategori_icon_id_fkey")
+  groups     groups?   @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "aset_kategoris_ibfk_1")
+  asets      asets[]
+
+  @@index([group_id], map: "group_id")
+}
+
+model asets {
+  id               String          @id @unique(map: "id") @db.Char(36)
+  urut             Int?
+  group_id         String          @db.Char(36)
+  user_id          String?         @db.Char(36)
+  aset_kategori_id String?         @db.Char(36)
+  nama             String          @db.VarChar(40)
+  icon_id          String?         @db.Char(36)
+  color_bg         String?         @db.VarChar(10)
+  color_text       String?         @db.VarChar(10)
+  created_at       DateTime?       @db.Timestamp(0)
+  updated_at       DateTime?       @db.Timestamp(0)
+  deleted_at       DateTime?       @db.Timestamp(0)
+  aset_akuns       aset_akuns[]
+  users            users?          @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "asets_ibfk_1")
+  icons            icons?          @relation(fields: [icon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "asets_ibfk_3")
+  groups           groups          @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "asets_ibfk_4")
+  aset_kategoris   aset_kategoris? @relation(fields: [aset_kategori_id], references: [id], onUpdate: Restrict, map: "asets_ibfk_2")
+
+  @@index([aset_kategori_id], map: "aset_kategori_id")
+  @@index([group_id], map: "group_id")
+  @@index([icon_id], map: "icon_id")
+  @@index([user_id], map: "user_id")
+}
+
+model group_kredits {
+  id                                                       String             @id @unique(map: "id") @db.Char(36)
+  tipe                                                     group_kredits_tipe
+  nominal                                                  Decimal            @default(0.00) @db.Decimal(13, 2)
+  keterangan                                               String             @db.Text
+  created_at                                               DateTime?          @db.Timestamp(0)
+  updated_at                                               DateTime?          @db.Timestamp(0)
+  user_id                                                  String             @db.Char(36)
+  group_id                                                 String             @db.Char(36)
+  users                                                    users              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "group_kredits_ibfk_1")
+  groups                                                   groups             @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "group_kredits_ibfk_2")
+  kredit_topups_kredit_topups_group_kreditsTogroup_kredits kredit_topups[]    @relation("kredit_topups_group_kreditsTogroup_kredits")
+
+  @@index([group_id], map: "group_id")
+  @@index([user_id], map: "user_id")
+}
+
+model group_users {
+  id         String             @id @unique(map: "id") @db.Char(36)
+  group_id   String             @db.Char(36)
+  user_id    String             @db.Char(36)
+  status     group_users_status
+  role       group_users_role
+  created_at DateTime?          @db.Timestamp(0)
+  updated_at DateTime?          @db.Timestamp(0)
+  groups     groups             @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "group_users_ibfk_1")
+  users      users              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "group_users_ibfk_2")
+
+  @@index([group_id], map: "group_id")
+  @@index([user_id], map: "user_id")
+}
+
+model groups {
+  id                           String                @id @unique(map: "id") @db.Char(36)
+  nama                         String                @db.VarChar(50)
+  user_id                      String?               @db.Char(36)
+  isPremium                    Boolean               @default(false)
+  premium_expired_at           DateTime?             @db.Timestamp(0)
+  created_at                   DateTime?             @db.Timestamp(0)
+  updated_at                   DateTime?             @db.Timestamp(0)
+  aset_akuns                   aset_akuns[]
+  aset_kategoris               aset_kategoris[]
+  asets                        asets[]
+  group_kredits                group_kredits[]
+  group_users                  group_users[]
+  users                        users?                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "groups_ibfk_1")
+  kredit_topups                kredit_topups[]
+  transaksi_kategoris          transaksi_kategoris[]
+  transaksis                   transaksis[]
+  users_users_group_idTogroups users[]               @relation("users_group_idTogroups")
+
+  @@index([user_id], map: "user_id")
+}
+
+model hutangs {
+  id String @id @db.Char(36)
 }
 
 model icons {
-  id            String         @id @default(uuid()) @db.Char(36)
-  img           String         @db.VarChar(60)
-  deleted_at    DateTime?      @db.DateTime(0)
-  aset_kategori aset_kategori?
+  id                  String                @id @unique(map: "id") @db.Char(36)
+  img                 String                @db.VarChar(60)
+  deleted_at          DateTime?             @db.DateTime(0)
+  aset_akuns          aset_akuns[]
+  aset_kategoris      aset_kategoris?
+  asets               asets[]
+  transaksi_kategoris transaksi_kategoris[]
 }
 
-model aset_kategori {
-  id      String  @id @default(uuid()) @db.Char(36)
-  nama    String  @db.VarChar(30)
-  icon_id String? @unique @db.Char(36)
-  icon    icons?  @relation(fields: [icon_id], references: [id])
+model kredit_topups {
+  id                                                       String               @id @unique(map: "id") @db.Char(36)
+  group_kredits                                            String?              @db.Char(36)
+  group_id                                                 String               @db.Char(36)
+  user_id                                                  String               @db.Char(36)
+  admin_id                                                 String?              @db.Char(36)
+  nominal                                                  Decimal              @default(0.00) @db.Decimal(13, 2)
+  kode_unik                                                Decimal              @default(0.00) @db.Decimal(8, 2)
+  ppn                                                      Decimal              @default(0.00) @db.Decimal(10, 2)
+  total_bayar                                              Decimal              @default(0.00) @db.Decimal(13, 2)
+  status                                                   kredit_topups_status
+  created_at                                               DateTime?            @db.Timestamp(0)
+  updated_at                                               DateTime?            @db.Timestamp(0)
+  group_kredits_kredit_topups_group_kreditsTogroup_kredits group_kredits?       @relation("kredit_topups_group_kreditsTogroup_kredits", fields: [group_kredits], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kredit_topups_ibfk_1")
+  groups                                                   groups               @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kredit_topups_ibfk_2")
+  users                                                    users                @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kredit_topups_ibfk_3")
+  admins                                                   admins?              @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "kredit_topups_ibfk_4")
+
+  @@index([admin_id], map: "admin_id")
+  @@index([group_id], map: "group_id")
+  @@index([group_kredits], map: "group_kredits")
+  @@index([user_id], map: "user_id")
 }
 
-model aset {
-  id String @id @default(uuid()) @db.Char(36)
+model labels {
+  id                  String                @id @db.Char(36)
+  nama                String                @db.VarChar(20)
+  color_bg            String?               @db.VarChar(10)
+  color_text          String?               @db.VarChar(10)
+  transaksi_kategoris transaksi_kategoris[]
+  transaksis          transaksis[]
 }
 
-model aset_akun {
-  id String @id @default(uuid()) @db.Char(36)
+model piutangs {
+  id String @id @db.Char(36)
 }
 
-model aset_user {
-  id String @id @default(uuid()) @db.Char(36)
+model transaksi_kategoris {
+  id         String                   @id @unique(map: "id") @db.Char(36)
+  urut       Int?
+  group_id   String?                  @db.Char(36)
+  partOf     String?                  @db.Char(36)
+  tipe       transaksi_kategoris_tipe
+  icon_id    String?                  @db.Char(36)
+  nama       String                   @db.VarChar(40)
+  user_id    String?                  @db.Char(36)
+  label_id   String?                  @db.Char(36)
+  created_at DateTime?                @db.Timestamp(0)
+  updated_at DateTime?                @db.Timestamp(0)
+  deleted_at DateTime?                @db.Timestamp(0)
+  icons      icons?                   @relation(fields: [icon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "transaksi_kategoris_ibfk_1")
+  users      users?                   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "transaksi_kategoris_ibfk_2")
+  groups     groups?                  @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "transaksi_kategoris_ibfk_3")
+  labels     labels?                  @relation(fields: [label_id], references: [id], onUpdate: NoAction, map: "transaksi_kategoris_ibfk_4")
+  transaksis transaksis[]
+
+  @@index([group_id], map: "group_id")
+  @@index([icon_id], map: "icon_id")
+  @@index([label_id], map: "label_id")
+  @@index([tipe], map: "transaksi_jenis_id")
+  @@index([user_id], map: "user_id")
 }
 
-model transaksi_jenis {
-  id String @id @default(uuid()) @db.Char(36)
+model users {
+  id                            String                @id @unique(map: "id") @db.Char(36)
+  nama                          String                @db.VarChar(30)
+  email                         String?               @unique(map: "users_email_unique") @db.VarChar(255)
+  phone                         String?               @unique(map: "users_phone_unique") @db.VarChar(16)
+  password                      String                @db.VarChar(65)
+  isaktif                       Boolean               @default(true)
+  group_id                      String?               @db.Char(36)
+  google_id                     String?               @db.VarChar(25)
+  lastSeenAt                    DateTime?             @db.Timestamp(0)
+  token                         String?               @db.Text
+  tokenRefresh                  String?               @db.Text
+  created_at                    DateTime?             @db.Timestamp(0)
+  updated_at                    DateTime?             @db.Timestamp(0)
+  aset_akuns                    aset_akuns[]
+  asets                         asets[]
+  group_kredits                 group_kredits[]
+  group_users                   group_users[]
+  groups                        groups[]
+  kredit_topups                 kredit_topups[]
+  transaksi_kategoris           transaksi_kategoris[]
+  transaksis                    transaksis[]
+  groups_users_group_idTogroups groups?               @relation("users_group_idTogroups", fields: [group_id], references: [id], onUpdate: NoAction, map: "users_ibfk_1")
+
+  @@index([group_id], map: "group_id")
 }
 
-model transaksi_kategori {
-  id String @id @default(uuid()) @db.Char(36)
+model transaksis {
+  id                    String               @id @unique(map: "id") @db.Char(36)
+  tipe                  transaksis_tipe
+  transaksi_kategori_id String?              @db.Char(36)
+  label_id              String?              @db.Char(36)
+  aset_akun_id          String?              @db.Char(36)
+  nominal               Decimal              @default(0.00) @db.Decimal(13, 2)
+  catatan               String?              @db.Text
+  img                   String?              @db.VarChar(80)
+  isLaporan             Boolean              @default(true)
+  transaksiOf           String?              @db.Char(36)
+  group_id              String               @db.Char(36)
+  user_id               String               @db.Char(36)
+  created_at            DateTime?            @db.Timestamp(0)
+  updated_at            DateTime?            @db.Timestamp(0)
+  labels                labels?              @relation(fields: [label_id], references: [id], onUpdate: Restrict, map: "transaksis_ibfk_13")
+  transaksi_kategoris   transaksi_kategoris? @relation(fields: [transaksi_kategori_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "transaksis_ibfk_2")
+  aset_akuns            aset_akuns?          @relation(fields: [aset_akun_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "transaksis_ibfk_5")
+  users                 users                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "transaksis_ibfk_8")
+  groups                groups               @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "transaksis_ibfk_9")
+
+  @@index([aset_akun_id], map: "aset_akun_id")
+  @@index([group_id], map: "group_id")
+  @@index([label_id], map: "label_id")
+  @@index([tipe], map: "transaksi_jenis_id")
+  @@index([transaksi_kategori_id], map: "transaksi_kategori_id")
+  @@index([user_id], map: "user_id")
 }
 
-model transasksi_subkategori {
-  id String @id @default(uuid()) @db.Char(36)
+enum group_kredits_tipe {
+  masuk
+  keluar
 }
 
-model transasksi {
-  id String @id @default(uuid()) @db.Char(36)
+enum group_users_status {
+  pending
+  aktif
+  nonaktif
 }
 
-model hutang {
-  id String @id @default(uuid()) @db.Char(36)
+enum group_users_role {
+  admin
+  anggota
 }
 
-model piutang {
-  id String @id @default(uuid()) @db.Char(36)
+enum kredit_topups_status {
+  pending
+  success
+  failed
 }
 
-model admin {
-  id             String    @id @unique(map: "id") @db.Char(36)
-  google_id      String?   @db.VarChar(30)
-  nama           String    @db.VarChar(25)
-  email          String    @unique(map: "email") @db.VarChar(40)
-  phone          String?   @db.VarChar(40)
-  password       String    @db.VarChar(80)
-  pass_fail      Int       @default(0)
-  pass_fail_at   DateTime? @db.Timestamp(0)
-  role           String    @db.VarChar(20)
-  isaktif        Boolean
-  otp            String?   @db.VarChar(80)
-  otp_resend_at  DateTime? @db.Timestamp(0)
-  otp_expired_at DateTime? @db.Timestamp(0)
-  otp_fail       Int       @default(0)
-  otp_fail_at    DateTime? @db.Timestamp(0)
-  token          String?   @db.Text
-  tokenRefresh   String?   @db.Text
-  created_at     DateTime? @db.Timestamp(0)
+enum transaksis_tipe {
+  masuk
+  keluar
+}
+
+enum transaksi_kategoris_tipe {
+  masuk
+  keluar
 }

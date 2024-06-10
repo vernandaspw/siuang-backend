@@ -16,12 +16,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 5.13.0
- * Query Engine version: b9a39a7ee606c28e3455d0fd60e78c3ba82b1a2b
+ * Prisma Client JS version: 5.15.0
+ * Query Engine version: 12e25d8d06f6ea5a0252864dd9a03b1bb51f3022
  */
 Prisma.prismaVersion = {
-  client: "5.13.0",
-  engine: "b9a39a7ee606c28e3455d0fd60e78c3ba82b1a2b"
+  client: "5.15.0",
+  engine: "12e25d8d06f6ea5a0252864dd9a03b1bb51f3022"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -119,72 +119,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.UserScalarFieldEnum = {
-  id: 'id',
-  nama: 'nama',
-  email: 'email',
-  phone: 'phone',
-  password: 'password',
-  isaktif: 'isaktif',
-  google_id: 'google_id',
-  lastSeenAt: 'lastSeenAt',
-  token: 'token',
-  tokenRefresh: 'tokenRefresh',
-  isPremium: 'isPremium',
-  premium_expired_at: 'premium_expired_at',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-};
-
-exports.Prisma.IconsScalarFieldEnum = {
-  id: 'id',
-  img: 'img',
-  deleted_at: 'deleted_at'
-};
-
-exports.Prisma.Aset_kategoriScalarFieldEnum = {
-  id: 'id',
-  nama: 'nama',
-  icon_id: 'icon_id'
-};
-
-exports.Prisma.AsetScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.Aset_akunScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.Aset_userScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.Transaksi_jenisScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.Transaksi_kategoriScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.Transasksi_subkategoriScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.TransasksiScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.HutangScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.PiutangScalarFieldEnum = {
-  id: 'id'
-};
-
-exports.Prisma.AdminScalarFieldEnum = {
+exports.Prisma.AdminsScalarFieldEnum = {
   id: 'id',
   google_id: 'google_id',
   nama: 'nama',
@@ -205,6 +140,163 @@ exports.Prisma.AdminScalarFieldEnum = {
   created_at: 'created_at'
 };
 
+exports.Prisma.Aset_akunsScalarFieldEnum = {
+  id: 'id',
+  urut: 'urut',
+  group_id: 'group_id',
+  user_id: 'user_id',
+  aset_id: 'aset_id',
+  nama: 'nama',
+  icon_id: 'icon_id',
+  color_bg: 'color_bg',
+  color_text: 'color_text',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at'
+};
+
+exports.Prisma.Aset_kategorisScalarFieldEnum = {
+  id: 'id',
+  urut: 'urut',
+  nama: 'nama',
+  group_id: 'group_id',
+  keterangan: 'keterangan',
+  icon_id: 'icon_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at'
+};
+
+exports.Prisma.AsetsScalarFieldEnum = {
+  id: 'id',
+  urut: 'urut',
+  group_id: 'group_id',
+  user_id: 'user_id',
+  aset_kategori_id: 'aset_kategori_id',
+  nama: 'nama',
+  icon_id: 'icon_id',
+  color_bg: 'color_bg',
+  color_text: 'color_text',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at'
+};
+
+exports.Prisma.Group_kreditsScalarFieldEnum = {
+  id: 'id',
+  tipe: 'tipe',
+  nominal: 'nominal',
+  keterangan: 'keterangan',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  user_id: 'user_id',
+  group_id: 'group_id'
+};
+
+exports.Prisma.Group_usersScalarFieldEnum = {
+  id: 'id',
+  group_id: 'group_id',
+  user_id: 'user_id',
+  status: 'status',
+  role: 'role',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.GroupsScalarFieldEnum = {
+  id: 'id',
+  nama: 'nama',
+  user_id: 'user_id',
+  isPremium: 'isPremium',
+  premium_expired_at: 'premium_expired_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.HutangsScalarFieldEnum = {
+  id: 'id'
+};
+
+exports.Prisma.IconsScalarFieldEnum = {
+  id: 'id',
+  img: 'img',
+  deleted_at: 'deleted_at'
+};
+
+exports.Prisma.Kredit_topupsScalarFieldEnum = {
+  id: 'id',
+  group_kredits: 'group_kredits',
+  group_id: 'group_id',
+  user_id: 'user_id',
+  admin_id: 'admin_id',
+  nominal: 'nominal',
+  kode_unik: 'kode_unik',
+  ppn: 'ppn',
+  total_bayar: 'total_bayar',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.LabelsScalarFieldEnum = {
+  id: 'id',
+  nama: 'nama',
+  color_bg: 'color_bg',
+  color_text: 'color_text'
+};
+
+exports.Prisma.PiutangsScalarFieldEnum = {
+  id: 'id'
+};
+
+exports.Prisma.Transaksi_kategorisScalarFieldEnum = {
+  id: 'id',
+  urut: 'urut',
+  group_id: 'group_id',
+  partOf: 'partOf',
+  tipe: 'tipe',
+  icon_id: 'icon_id',
+  nama: 'nama',
+  user_id: 'user_id',
+  label_id: 'label_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at'
+};
+
+exports.Prisma.UsersScalarFieldEnum = {
+  id: 'id',
+  nama: 'nama',
+  email: 'email',
+  phone: 'phone',
+  password: 'password',
+  isaktif: 'isaktif',
+  group_id: 'group_id',
+  google_id: 'google_id',
+  lastSeenAt: 'lastSeenAt',
+  token: 'token',
+  tokenRefresh: 'tokenRefresh',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.TransaksisScalarFieldEnum = {
+  id: 'id',
+  tipe: 'tipe',
+  transaksi_kategori_id: 'transaksi_kategori_id',
+  label_id: 'label_id',
+  aset_akun_id: 'aset_akun_id',
+  nominal: 'nominal',
+  catatan: 'catatan',
+  img: 'img',
+  isLaporan: 'isLaporan',
+  transaksiOf: 'transaksiOf',
+  group_id: 'group_id',
+  user_id: 'user_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -214,22 +306,54 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.group_kredits_tipe = exports.$Enums.group_kredits_tipe = {
+  masuk: 'masuk',
+  keluar: 'keluar'
+};
 
+exports.group_users_status = exports.$Enums.group_users_status = {
+  pending: 'pending',
+  aktif: 'aktif',
+  nonaktif: 'nonaktif'
+};
+
+exports.group_users_role = exports.$Enums.group_users_role = {
+  admin: 'admin',
+  anggota: 'anggota'
+};
+
+exports.kredit_topups_status = exports.$Enums.kredit_topups_status = {
+  pending: 'pending',
+  success: 'success',
+  failed: 'failed'
+};
+
+exports.transaksi_kategoris_tipe = exports.$Enums.transaksi_kategoris_tipe = {
+  masuk: 'masuk',
+  keluar: 'keluar'
+};
+
+exports.transaksis_tipe = exports.$Enums.transaksis_tipe = {
+  masuk: 'masuk',
+  keluar: 'keluar'
+};
 
 exports.Prisma.ModelName = {
-  user: 'user',
+  admins: 'admins',
+  aset_akuns: 'aset_akuns',
+  aset_kategoris: 'aset_kategoris',
+  asets: 'asets',
+  group_kredits: 'group_kredits',
+  group_users: 'group_users',
+  groups: 'groups',
+  hutangs: 'hutangs',
   icons: 'icons',
-  aset_kategori: 'aset_kategori',
-  aset: 'aset',
-  aset_akun: 'aset_akun',
-  aset_user: 'aset_user',
-  transaksi_jenis: 'transaksi_jenis',
-  transaksi_kategori: 'transaksi_kategori',
-  transasksi_subkategori: 'transasksi_subkategori',
-  transasksi: 'transasksi',
-  hutang: 'hutang',
-  piutang: 'piutang',
-  admin: 'admin'
+  kredit_topups: 'kredit_topups',
+  labels: 'labels',
+  piutangs: 'piutangs',
+  transaksi_kategoris: 'transaksi_kategoris',
+  users: 'users',
+  transaksis: 'transaksis'
 };
 
 /**
