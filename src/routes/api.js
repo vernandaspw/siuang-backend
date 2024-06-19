@@ -14,6 +14,7 @@ router.post('/v1/admin/auth/logout', authAdminMiddleware, require('../controller
 router.post('/v1/auth/daftar', require('../controller/api/user/userAuthController').register)
 router.post('/v1/auth/login', require('../controller/api/user/userAuthController').login)
 router.post('/v1/auth/token', require('../controller/api/user/userAuthController').refreshToken)
+router.get('/v1/auth/user', authUserMiddleware, require('../controller/api/user/userAuthController').user)
 router.post('/v1/auth/logout', authUserMiddleware, require('../controller/api/user/userAuthController').logout)
 
 // group

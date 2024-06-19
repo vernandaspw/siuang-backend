@@ -27,7 +27,7 @@ async function authAdminMiddleware(req, res, next) {
 
         const decoded = jwt.verify(accessToken, JWT_SECRET);
         if (!decoded || !decoded.id) {
-            return res.status(403).json({ msg: 'Token akses tidak valid' });
+            return res.status(401).json({ msg: 'Token akses tidak valid' });
         }
 
         const user = await db.beresorder.admin.findUnique({
@@ -36,11 +36,11 @@ async function authAdminMiddleware(req, res, next) {
             },
         });
         if (!user) {
-            return res.status(404).json({ msg: 'Pengguna tidak ditemukan' });
+            return res.status(401).json({ msg: 'Pengguna tidak ditemukan' });
         }
 
         if (accessToken != user.token) {
-            return res.status(403).json({ msg: 'Token akses tidak berlaku' });
+            return res.status(401).json({ msg: 'Token akses tidak berlaku' });
         }
 
 
@@ -51,7 +51,7 @@ async function authAdminMiddleware(req, res, next) {
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
             console.error('TokenExpiredError:', error); // Logging error
-            return res.status(401).json({ msg: 'Token akses sudah kedaluwarsa' });
+            return res.status(403).json({ msg: 'Token akses sudah kedaluwarsa' });
         } else if (error.name === 'JsonWebTokenError') {
             console.error('JsonWebTokenError:', error); // Logging error
             return res.status(401).json({ msg: `Token akses tidak valid: ${error.message}` });

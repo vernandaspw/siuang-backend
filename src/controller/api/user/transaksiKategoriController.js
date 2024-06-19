@@ -22,6 +22,9 @@ exports.getAll = async (req, res) => {
                     { group_id: group_id },
                     { group_id: null }
                 ]
+            },
+            orderBy: {
+                nama: 'asc'
             }
         });
 
